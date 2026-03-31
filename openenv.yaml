@@ -1,0 +1,30 @@
+name: cloud-cost-env
+description: >
+  An agentic environment for optimizing cloud infrastructure costs.
+  The agent must reduce spending by stopping idle instances and resizing
+  over-provisioned ones, while keeping high-utilization instances running.
+
+version: "1.0.0"
+
+actions:
+  - stop      # Stop a running instance (rewarded only if CPU < 20%)
+  - resize    # Halve the cost of an instance
+
+observations:
+  - instances   # List of Instance objects (id, status, cpu_usage, cost)
+  - total_cost  # Sum of costs for all running instances
+
+reward_range: [0.0, 1.0]
+
+tasks:
+  easy:
+    description: Stop at least one idle instance (cpu_usage < 20%)
+    file: tasks/easy.py
+  medium:
+    description: Reduce total running cost below $40
+    file: tasks/medium.py
+  hard:
+    description: Reduce cost AND keep all busy instances running
+    file: tasks/hard.py
+
+done_condition: total_cost < 30
